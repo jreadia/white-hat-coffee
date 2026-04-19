@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+venv/
+.env
+*.sqlite3
+
+# Node
+node_modules/
+build/
+dist/
+.env.local
+
+# Data
+*.pkl
+*.csv
+*.tsv
+*.db
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
