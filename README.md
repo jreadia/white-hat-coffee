@@ -10,6 +10,7 @@ Full-stack web application for ordering specialty coffee online. Built with Reac
 - Admin order management (view, update status, cancel orders)
 - Customer order history with color-coded status badges
 - Product image uploads with FormData multipart
+- **Sentiment Analysis** - AI-powered customer feedback analysis
 - Responsive UI with Tailwind CSS
 
 ---
@@ -97,7 +98,14 @@ Frontend runs on: `http://localhost:3001`
 - Browse products on the Menu page
 - Add items to cart and checkout
 - View order history and track order status at `/orders`
+- Submit feedback with star ratings at `/feedback`
 - Receive real-time updates on order status changes
+
+### Feedback & Sentiment Analysis
+- Customers can submit feedback with 1-5 star ratings
+- AI analyzes sentiment (positive/negative/neutral) using two-stage SVM classifier
+- Admin dashboard displays real-time sentiment analytics
+- View recent feedback with confidence scores
 
 ---
 
@@ -153,6 +161,13 @@ white-hat-coffee/
 - `POST /api/orders/create_from_cart/` - Create order from cart
 - `PATCH /api/orders/{id}/update_status/` - Update order status (admin only)
 - `POST /api/orders/{id}/cancel_order/` - Cancel order (admin only)
+
+### Feedback & Sentiment Analysis
+- `POST /api/feedback/` - Submit feedback with rating and message
+- `GET /api/feedback/` - Get feedback (user's feedback or all for admin)
+- `GET /api/feedback/analytics/` - Get sentiment analytics (admin only)
+- `GET /api/feedback/recent/` - Get 20 most recent feedback items (admin only)
+- `POST /api/feedback/check_model/` - Check sentiment model status (admin only)
 
 ### Customer Profile
 - `GET /api/customer/profile/` - Get user profile
