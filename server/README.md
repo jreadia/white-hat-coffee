@@ -4,14 +4,16 @@ Django REST Framework backend for the White Hat Coffee application with JWT auth
 
 ## Setup
 
-### 1. Create Python Virtual Environment
+### ⚙️ FIRST TIME SETUP ONLY (Run Once)
+
+#### 1. Create Python Virtual Environment
 
 ```bash
 cd server
 python -m venv venv
 ```
 
-### 2. Activate Virtual Environment
+#### 2. Activate Virtual Environment
 
 **Windows:**
 ```bash
@@ -23,13 +25,13 @@ python -m venv venv
 source venv/bin/activate
 ```
 
-### 3. Install Dependencies
+#### 3. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Configure Environment Variables
+#### 4. Configure Environment Variables
 
 Create a `.env` file in the server directory (use `.env.example` as template):
 
@@ -38,17 +40,19 @@ cp .env.example .env
 ```
 
 Edit `.env` and update:
-- `SECRET_KEY` - Change to a secure random key for production
+- `SECRET_KEY` - Generate with: `python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"`
 - `DEBUG` - Set to `False` in production
 - Database credentials (if using PostgreSQL)
 
-### 5. Run Migrations
+#### 5. Run Database Migrations
 
 ```bash
 python manage.py migrate
 ```
 
-### 6. Create Superuser (for admin access)
+**Note:** Only run this once during initial setup, unless you modify Django models.
+
+#### 6. Create Superuser (Admin Account)
 
 ```bash
 python manage.py createsuperuser
@@ -62,7 +66,21 @@ python manage.py shell
 >>> User.objects.create_superuser('admin@test.com', 'admin@test.com', 'password123')
 ```
 
-### 7. Start Development Server
+### 🚀 REGULAR DEVELOPMENT (Run Every Time)
+
+#### 1. Activate Virtual Environment
+
+**Windows:**
+```bash
+.\venv\Scripts\Activate.ps1
+```
+
+**Linux/Mac:**
+```bash
+source venv/bin/activate
+```
+
+#### 2. Start Development Server
 
 ```bash
 python manage.py runserver

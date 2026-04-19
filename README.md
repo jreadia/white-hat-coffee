@@ -70,11 +70,15 @@ Full-stack web application for ordering specialty coffee online. Built with Reac
 
 ### 1. Backend Setup (Django)
 
+#### ⚙️ FIRST TIME SETUP ONLY (Run Once)
+
 ```bash
 cd server
 
-# Create and activate virtual environment
+# Create virtual environment
 python -m venv venv
+
+# Activate virtual environment
 .\venv\Scripts\Activate.ps1   # Windows PowerShell
 # or: source venv/bin/activate  # macOS/Linux
 
@@ -83,6 +87,7 @@ pip install -r requirements.txt
 
 # Run migrations (creates tables in Supabase)
 python manage.py migrate
+# Note: Only run once during initial setup, unless you modify Django models
 
 # Create a superuser (admin account)
 python manage.py createsuperuser
@@ -90,9 +95,22 @@ python manage.py createsuperuser
 # Enter password: admin123
 ```
 
-**Note:** Migrations run against Supabase PostgreSQL configured in `.env`
+#### 🚀 REGULAR DEVELOPMENT (Run Every Time)
+
+```bash
+cd server
+
+# Activate virtual environment
+.\venv\Scripts\Activate.ps1   # Windows PowerShell
+# or: source venv/bin/activate  # macOS/Linux
+
+# Start development server
+python manage.py runserver
+```
 
 ### 2. Frontend Setup (React)
+
+#### ⚙️ FIRST TIME SETUP ONLY (Run Once)
 
 ```bash
 cd client
@@ -101,15 +119,26 @@ cd client
 npm install
 ```
 
+#### 🚀 REGULAR DEVELOPMENT (Run Every Time)
+
+```bash
+cd client
+
+# Start development server
+npm run dev
+```
+
 ---
 
 ## Running the Application
+
+After initial setup, you only need to run the development servers:
 
 ### Start Backend (Terminal 1)
 
 ```bash
 cd server
-.\venv\Scripts\Activate.ps1   # Activate virtual environment
+.\venv\Scripts\Activate.ps1   # Windows PowerShell
 python manage.py runserver
 ```
 
@@ -149,9 +178,6 @@ Frontend runs on: `http://localhost:3001` (or `http://localhost:3002` if port 30
 - Browse products on the Menu page
 - Add items to cart and checkout
 - View order history and track order status at `/orders`
-<<<<<<< HEAD
-- Receive real-time updates on order status changes
-=======
 - Submit feedback with star ratings at `/feedback`
 - Receive real-time updates on order status changes
 
@@ -167,7 +193,6 @@ Frontend runs on: `http://localhost:3001` (or `http://localhost:3002` if port 30
   - Recent feedback table with confidence scores
   - Real-time sentiment tracking
 - Built with scikit-learn SVM classifiers + TfidfVectorizer
->>>>>>> supabase-migration
 
 ---
 
