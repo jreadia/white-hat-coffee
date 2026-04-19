@@ -2,10 +2,10 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
-from .serializers import SignUpSerializer, LoginSerializer, UserSerializer
+from .serializers import SignUpSerializer, LoginSerializer, UserSerializer, CustomerProfileSerializer
 
 User = get_user_model()
 
@@ -68,3 +68,34 @@ class LoginViewSet(viewsets.ViewSet):
             'success': False,
             'errors': serializer.errors
         }, status=status.HTTP_401_UNAUTHORIZED)
+
+
+class CustomerProfileViewSet(viewsets.ViewSet):
+    """ViewSet for customer profile management"""
+    permission_classes = (IsAuthenticated,)
+    
+    def list(self, request):
+        """Get current user's profile"""
+        serializer = CustomerProfileSerializer(request.user)
+        return Response({
+            'success': True,
+            'profile': serializer.data
+        }, status=status.HTTP_200_OK)
+    
+    def create(self, request):
+        """Update current user's profile"""
+        user = request.user
+        serializer = CustomerProfileSerializer(user, data=request.data, partial=True)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response({
+                'success': True,
+                'profile': serializer.data,
+                'message': 'Profile updated successfully.'
+            }, status=status.HTTP_200_OK)
+        
+        return Response({
+            'success': False,
+            'errors': serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)

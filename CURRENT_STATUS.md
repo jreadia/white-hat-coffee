@@ -1,9 +1,16 @@
 # White Hat Coffee - Current Working Status
 
-**Last Updated:** April 19, 2026
+**Last Updated:** April 19, 2026 - 4:30 PM
 
 ## 🎯 Project Overview
 Full-stack React + Django coffee shop web application with authentication, product ordering, and admin dashboard.
+
+### Current Session Progress (April 19)
+- ✅ Product image upload functionality implemented (FormData multipart)
+- ✅ Real-time delete product without page refresh (204 status fix)
+- ✅ Admin dashboard shows same products as customers (productAPI.getAdminList)
+- ✅ Logo component added to admin dashboard header
+- ✅ Website favicon added (coffee cup emoji in teal circle)
 
 ---
 
@@ -24,17 +31,48 @@ Full-stack React + Django coffee shop web application with authentication, produ
   - Regular users → `/menu` page
 - [x] Admin user flag (`is_superuser`) returned from backend
 
+### Customer Profile Management
+- [x] Extended CustomUser model with address fields (building number, street name, etc.)
+- [x] Customer profile API endpoints (GET and POST)
+- [x] Address persistence in database
+- [x] Checkout page integrated with customer profile API
+- [x] Automatic address display on login
+- [x] Edit/update address functionality
+- [x] Form validation for required address fields
+
+### Product Management
+- [x] Product model with name, price, description, image_url, available fields
+- [x] Product API endpoints (CRUD operations)
+- [x] Admin-only create/update/delete permissions
+- [x] Public read access (GET /products/)
+- [x] Menu page fetching products from API (dynamic product display)
+- [x] Error handling and loading states on Menu page
+
+### Order Management
+- [x] Order model with status tracking (pending, confirmed, preparing, ready, completed, cancelled)
+- [x] OrderItem model linking products to orders
+- [x] Order API endpoints (CRUD and custom actions)
+- [x] Create order from cart items endpoint
+- [x] User can only view their own orders
+- [x] Admin can view all orders and update status
+- [x] Admin can cancel orders
+- [x] Checkout page integrated with order API
+- [x] Order confirmation with order ID
+- [x] Cart clears after successful order placement
+- [x] Test suite for orders (test_orders.py)
+
 ### Frontend Architecture
 - [x] React 18 with React Router v6
 - [x] Vite build tool
 - [x] Tailwind CSS styling
 - [x] Context API for global state (AuthContext, CartContext)
 - [x] Component structure (Button, FormInput, FormTextarea, Header, Logo)
+- [x] Menu page fetching products from API (dynamic product display)
 - [x] Page routing:
   - `/` - Landing page (public)
   - `/login` - Unified login for users & admins (public)
   - `/signup` - User registration (public)
-  - `/menu` - Product menu (authenticated, regular users)
+  - `/menu` - Product menu (authenticated, regular users) - **API-driven**
   - `/checkout` - Shopping cart checkout (authenticated)
   - `/admin` - Admin dashboard (admin only)
   - `/feedback` - Feedback submission (authenticated)
@@ -54,6 +92,20 @@ Full-stack React + Django coffee shop web application with authentication, produ
 ### API Endpoints (Working)
 - `POST /api/auth/signup/` - User registration
 - `POST /api/auth/login/` - User login
+- `GET /api/customer/profile/` - Get current user's profile with address
+- `POST /api/customer/profile/` - Update current user's profile (address fields)
+- `GET /api/products/` - List all available products (public)
+- `GET /api/products/admin_list/` - List all products including unavailable (admin only)
+- `GET /api/products/{id}/` - Get single product by ID (public)
+- `POST /api/products/` - Create product with image upload (admin only, FormData/multipart)
+- `PATCH /api/products/{id}/` - Update product with optional image (admin only, FormData/multipart)
+- `DELETE /api/products/{id}/` - Delete product (admin only, returns 204 No Content)
+- `PATCH /api/products/{id}/toggle_availability/` - Toggle product availability (admin only)
+- `GET /api/orders/` - Get user's orders (authenticated)
+- `GET /api/orders/{id}/` - Get single order (authenticated, user's orders only)
+- `POST /api/orders/create_from_cart/` - Create order from cart items (authenticated)
+- `PATCH /api/orders/{id}/update_status/` - Update order status (admin only)
+- `POST /api/orders/{id}/cancel_order/` - Cancel order (admin only)
 - `GET /admin/` - Django admin panel
 
 ### Security
@@ -70,53 +122,60 @@ Full-stack React + Django coffee shop web application with authentication, produ
 ### Admin Dashboard
 - [x] Page created (`AdminDashboard.jsx`)
 - [x] Protected route (admin-only access)
-- [ ] Dashboard UI/features not yet implemented
+- [x] Product CRUD operations (Create, Read, Update, Delete)
+- [x] Image upload with FormData multipart
+- [x] Real-time UI updates (no manual refresh needed)
+- [x] Product availability toggle
+- [x] Logo component integration
+- [x] Favicon added to browser tab
+- [ ] Order management UI (view, update status, cancel)
+- [ ] User management UI
 
 ---
 
 ## 📝 Pending Features
 
-### Priority 1 - Core Functionality
-- [ ] **Product API Endpoints**
-  - GET `/api/products/` - List all products
-  - POST `/api/products/` - Create product (admin only)
-  - PUT `/api/products/{id}/` - Update product (admin only)
-  - DELETE `/api/products/{id}/` - Delete product (admin only)
-  - Serializers in `server/products/serializers.py`
-  - ViewSets in `server/products/views.py`
+### Priority 1 - Admin Dashboard (In Progress)
+- [x] Product CRUD operations
+- [x] Image upload functionality
+- [x] Product availability toggle
+- [x] Logo branding
+- [x] Website favicon
+- [ ] Order management UI (view, update status, cancel)
+- [ ] User management UI
+- [ ] Analytics dashboard
 
-- [ ] **Update Menu Page**
-  - Fetch products from API instead of hardcoded data
-  - Display product list dynamically
+### Priority 2 - Order Enhancements
+- [ ] **Order History Page**
+  - View past orders
+  - Track order status in real-time
+  - Reorder from past orders
 
-### Priority 2 - Shopping Cart
-- [ ] **Order API Endpoints**
-  - POST `/api/orders/` - Create order from cart
-  - GET `/api/orders/` - List user's orders
-  - OrderItem creation for each cart item
-  - Cart → Order conversion logic
+- [ ] **Email Notifications**
+  - Order confirmation email
+  - Order status update emails
+  - Ready for pickup notification
 
-- [ ] **Checkout Integration**
-  - Save cart items to database
-  - Create Order record with OrderItem entries
-  - Payment method selection
-
-### Priority 3 - User Features
-- [ ] **Feedback API Endpoints**
-  - POST `/api/feedback/` - Submit feedback
-  - GET `/api/feedback/` - List feedback (admin)
-  - Sentiment analysis integration
-
-- [ ] **Feedback Page Integration**
-  - Connect to backend API
-  - Submit rating + message
-
-### Priority 4 - Admin Features
+### Priority 3 - Admin Features
 - [ ] **Admin Dashboard Implementation**
-  - Product management UI
-  - Order management UI
+  - Product management UI (CRUD)
+  - Order management UI (view, update status, cancel)
   - User management UI
   - Feedback/sentiment analysis dashboard
+  - Sales analytics and reports
+
+- [ ] **Admin Product Management Panel**
+  - Add new products
+  - Edit existing products
+  - Delete products
+  - View/manage inventory
+
+### Priority 4 - Enhancements
+- [ ] Add product categories
+- [ ] Add product images upload functionality
+- [ ] Product search and filtering
+- [ ] Payment gateway integration (GCash, COD verification)
+- [ ] Order notes/special instructions
 
 ### Priority 5 - Production
 - [ ] Migrate from SQLite to PostgreSQL
@@ -133,6 +192,7 @@ Admin Account:
 - Email: admin@test.com
 - Password: admin123
 - Behavior: Logs in and redirects to /admin
+- Features: Full CRUD for products, image uploads, availability toggle
 
 Regular User Account:
 - Email: user@test.com
@@ -145,8 +205,12 @@ Regular User Account:
 cd server
 .\venv\Scripts\Activate.ps1
 python test_auth.py
+python test_products.py
+python test_orders.py
 ```
 All authentication tests passing ✅
+Product CRUD tests passing ✅
+Order management tests passing ✅
 
 ---
 
@@ -216,11 +280,30 @@ All authentication tests passing ✅
 
 ## 🛠️ Next Steps
 
-1. **Create Product API** - Implement serializers and viewsets
-2. **Update Menu Page** - Fetch from API instead of hardcoded data
-3. **Implement Checkout** - Order creation from cart
-4. **Build Admin Dashboard** - Product/order/user management UI
-5. **Add Feedback API** - Feedback submission and sentiment analysis
+1. **Complete Admin Dashboard** 
+   - Order management UI (view orders, update status, cancel)
+   - User management UI
+   - Sales analytics
+
+2. **Feedback System**
+   - Feedback API endpoints
+   - Feedback page integration
+   - Sentiment analysis
+
+3. **Order Management Features**
+   - Order history page for customers
+   - Real-time order status tracking
+   - Email notifications
+
+4. **Enhancements**
+   - Product categories and filtering
+   - Search functionality
+   - Payment gateway integration
+
+5. **Production Deployment**
+   - PostgreSQL migration
+   - Environment variables setup
+   - Server deployment
 
 ---
 

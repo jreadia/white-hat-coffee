@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../contexts/CartContext';
-import { customerAPI } from '../services/api';
+import { customerAPI, orderAPI } from '../services/api';
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -138,31 +138,38 @@ const Checkout = () => {
       return;
     }
 
-    try {
-      // TODO: Replace with actual API call once backend is ready
-      // const orderData = {
-      //   items: cartItems,
-      //   totalPrice: sumTotal,
-      //   paymentMethod: selectedPayment,
-      //   customerId: customer.id,
-      // };
-      // const response = await orderAPI.create(orderData);
-      // if (response.status === 201) {
-      //   clearCart();
-      //   alert('Order placed successfully!');
-      //   navigate('/');
-      // }
+    // Verify customer has complete address
+    if (!customer || !customer.building_number || !customer.street_name || !customer.street_address) {
+      alert('Please complete your delivery address before checkout');
+      setIsEditingAddress(true);
+      return;
+    }
 
-      // Simulate order submission
-      console.log('Order submitted:', {
-        items: cartItems,
-        totalPrice: sumTotal,
-        paymentMethod: selectedPayment,
-      });
-      alert(`Order placed with ${selectedPayment}! Total: PHP ${sumTotal}\nBackend integration coming soon!`);
+    setIsLoading(true);
+    try {
+      // Prepare order data for API
+      const orderData = {
+        items: cartItems.map(item => ({
+          product_id: item.id,
+          quantity: item.quantity,
+          price: item.price.toString()
+        })),
+        payment_method: selectedPayment,
+        total_price: sumTotal.toString()
+      };
+
+      const response = await orderAPI.createFromCart(orderData);
+      if (response.data.success) {
+        const order = response.data.order;
+        clearCart();
+        alert(`Order #${order.id} placed successfully!\nTotal: PHP ${order.total_price}\nWe are preparing your order!`);
+        navigate('/menu');
+      }
     } catch (err) {
-      console.error(err);
-      alert('Failed to place order. Please try again.');
+      console.error('Failed to place order:', err);
+      setError('Failed to place order. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -410,12 +417,7 @@ const Checkout = () => {
                 </button>
               )}
 
-              {/* Backend Note */}
-              <div className="p-4 bg-blue-50 border-2 border-blue-300 rounded">
-                <p className="text-sm text-blue-800">
-                  <strong>✅ Connected:</strong> Customer profiles are now saved to the backend database. Your address information is securely stored with your account.
-                </p>
-              </div>
+
             </div>
           </div>
         )}

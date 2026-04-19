@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
+import { productAPI } from '../services/api';
 import Header from '../components/Header';
 import Button from '../components/Button';
 
@@ -13,28 +14,18 @@ const Menu = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Sample product data - Replace with API call once backend is ready
+  // Fetch products from API
   useEffect(() => {
     const loadProducts = async () => {
       setIsLoading(true);
       setError(null);
       try {
-        // TODO: Replace with actual API call
-        // const response = await productAPI.getAll();
-        // setProducts(response.data);
-
-        // Sample data for testing
-        const sampleProducts = [
-          { id: 1, name: 'Matcha Frappuccino', price: 160, category: 'Frappes', image: 'matcha.jpg' },
-          { id: 2, name: 'Strawberry Frappuccino', price: 130, category: 'Frappes', image: 'strawberry.jpg' },
-          { id: 3, name: 'Green Apple Frappuccino', price: 130, category: 'Frappes', image: 'green-apple.jpg' },
-          { id: 4, name: 'Blueberry Frappuccino', price: 130, category: 'Frappes', image: 'blueberry.jpg' },
-          { id: 5, name: 'Oreo Frappuccino', price: 160, category: 'Frappes', image: 'oreo.jpg' },
-          { id: 6, name: 'Java Chip Frappuccino', price: 160, category: 'Frappes', image: 'java-chip.jpg' },
-        ];
-        setProducts(sampleProducts);
+        const response = await productAPI.getAll();
+        if (response.data.success) {
+          setProducts(response.data.products);
+        }
       } catch (err) {
-        setError('Failed to load products');
+        setError('Failed to load products. Please try again later.');
         console.error(err);
       } finally {
         setIsLoading(false);
@@ -45,9 +36,7 @@ const Menu = () => {
   }, []);
 
   // Filter products based on selected category
-  const filteredProducts = selectedCategory === 'all' 
-    ? products 
-    : products.filter(p => p.category === selectedCategory);
+  const filteredProducts = products;
 
   // Handle Add to Cart
   const handleAddToCart = (product) => {
@@ -140,42 +129,64 @@ const Menu = () => {
 
         {/* Right Content Area - Products Grid */}
         <div className="w-3/4 p-8">
-          {/* Products Grid */}
-          <div className="grid grid-cols-3 gap-8">
-            {filteredProducts.map((product) => (
-              <div
-                key={product.id}
-                className="border-2 border-gray-400 rounded-lg p-6 bg-white flex flex-col items-center text-center hover:shadow-lg transition"
-              >
-                {/* Product Image Placeholder */}
-                <div className="w-40 h-40 bg-gradient-to-b from-amber-100 to-amber-200 rounded-lg flex items-center justify-center mb-4 border border-gray-300">
-                  <div className="text-6xl">☕</div>
-                </div>
+          {error && (
+            <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+              {error}
+            </div>
+          )}
 
-                {/* Product Name */}
-                <h3 className="text-lg font-bold text-gray-800 mb-2">{product.name}</h3>
+          {isLoading ? (
+            <div className="text-center py-20">
+              <p className="text-gray-600 text-lg">Loading products...</p>
+            </div>
+          ) : filteredProducts.length > 0 ? (
+            <>
+              {/* Products Grid */}
+              <div className="grid grid-cols-3 gap-8">
+                {filteredProducts.map((product) => (
+                  <div
+                    key={product.id}
+                    className="border-2 border-gray-400 rounded-lg p-6 bg-white flex flex-col items-center text-center hover:shadow-lg transition"
+                  >
+                    {/* Product Image - Standardized 160x160px */}
+                    <div className="w-40 h-40 bg-gradient-to-b from-amber-100 to-amber-200 rounded-lg flex items-center justify-center mb-4 border border-gray-300 flex-shrink-0">
+                      {product.image_url ? (
+                        <img src={product.image_url} alt={product.name} className="w-40 h-40 object-cover rounded-lg" />
+                      ) : (
+                        <div className="text-6xl">☕</div>
+                      )}
+                    </div>
 
-                {/* Price */}
-                <p className="text-teal-700 font-bold text-lg mb-4">PHP {product.price}</p>
+                    {/* Product Name */}
+                    <h3 className="text-lg font-bold text-gray-800 mb-2">{product.name}</h3>
 
-                {/* Add to Cart Button */}
-                <button
-                  onClick={() => handleAddToCart(product)}
-                  className="w-full bg-yellow-700 hover:bg-yellow-800 text-white font-bold py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition"
-                >
-                  <span>Add to Cart</span>
-                  <span>🛒</span>
-                </button>
+                    {/* Product Description */}
+                    {product.description && (
+                      <p className="text-sm text-gray-600 mb-3 line-clamp-2">{product.description}</p>
+                    )}
+
+                    {/* Price */}
+                    <p className="text-teal-700 font-bold text-lg mb-4">PHP {parseFloat(product.price).toFixed(2)}</p>
+
+                    {/* Add to Cart Button */}
+                    <button
+                      onClick={() => handleAddToCart(product)}
+                      className="w-full bg-yellow-700 hover:bg-yellow-800 text-white font-bold py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition"
+                    >
+                      <span>Add to Cart</span>
+                      <span>🛒</span>
+                    </button>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
 
-          {/* Backend Note */}
-          <div className="mt-12 p-6 bg-blue-50 border-2 border-blue-300 rounded-lg">
-            <p className="text-sm text-blue-800">
-              <strong>📦 Note:</strong> This is the menu/shop page structure. Product images, categories, cart persistence, and checkout payment integration will be connected to the backend once the API is ready.
-            </p>
-          </div>
+
+            </>
+          ) : (
+            <div className="text-center py-20">
+              <p className="text-gray-600 text-lg">No products available</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

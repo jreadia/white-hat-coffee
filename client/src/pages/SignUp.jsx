@@ -196,11 +196,6 @@ export default function SignUp() {
             Login here
           </button>
         </p>
-
-        {/* Backend Note */}
-        <div className="mt-6 p-3 bg-blue-300 bg-opacity-20 border border-blue-200 rounded text-blue-100 text-xs text-center">
-          <strong>🔐 Note:</strong> Signup API integration pending. Form validation is working.
-        </div>
       </form>
     </div>
   );

@@ -30,6 +30,13 @@ class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=20, blank=True, null=True)
     
+    # Delivery Address Fields
+    building_number = models.CharField(max_length=100, blank=True, null=True)
+    street_name = models.CharField(max_length=255, blank=True, null=True)
+    street_address = models.CharField(max_length=255, blank=True, null=True)
+    state = models.CharField(max_length=100, blank=True, null=True)
+    city = models.CharField(max_length=100, blank=True, null=True)
+    
     objects = CustomUserManager()
     
     USERNAME_FIELD = 'email'

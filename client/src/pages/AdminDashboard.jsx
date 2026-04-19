@@ -2,27 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import Button from '../components/Button';
+import Logo from '../components/Logo';
+import { productAPI, orderAPI, apiClient } from '../services/api';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, isLoading: authLoading, logout } = useAuth();
   const [activeTab, setActiveTab] = useState('products');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
   // Products state
-  const [products, setProducts] = useState([
-    { id: 1, name: 'Matcha Frappuccino', price: 160.00, available: true },
-    { id: 2, name: 'Mango Frappuccino', price: 130.00, available: false },
-    { id: 3, name: 'Green Apple Frappuccino', price: 130.00, available: true },
-    { id: 4, name: 'Oreo Frappuccino', price: 160.00, available: false },
-  ]);
+  const [products, setProducts] = useState([]);
 
   // Orders state
-  const [orders, setOrders] = useState([
-    { id: 1, customerName: 'Juan Dela Cruz', totalPrice: 450, items: [{ name: 'Blueberry Frappuccino', quantity: 1 }, { name: 'Oreo Frappuccino', quantity: 2 }], paymentMethod: 'Cash On Delivery', status: 'pending' },
-    { id: 2, customerName: 'Jane Doe', totalPrice: 480, items: [{ name: 'Matcha Frappuccino', quantity: 3 }], paymentMethod: 'GCash', status: 'pending' },
-  ]);
+  const [orders, setOrders] = useState([]);
 
   // Form state
   const [editingProduct, setEditingProduct] = useState(null);
@@ -38,17 +32,19 @@ export default function AdminDashboard() {
       setIsLoading(true);
       setError(null);
       try {
-        // TODO: Uncomment when backend is ready
-        // const productsResponse = await productAPI.getAll();
-        // setProducts(productsResponse.data);
+        const productsResponse = await productAPI.getAdminList();
+        if (productsResponse.data.success) {
+          setProducts(productsResponse.data.products);
+        }
         
-        // const ordersResponse = await orderAPI.getAll();
-        // setOrders(ordersResponse.data);
+        const ordersResponse = await orderAPI.getAll();
+        if (ordersResponse.data.success) {
+          setOrders(ordersResponse.data.orders);
+        }
 
-        // For now, use sample data above
-        console.log('Products and orders loaded from local state (sample data)');
+        console.log('Products and orders loaded from API');
       } catch (err) {
-        setError('Failed to load data. Using sample data for now.');
+        setError('Failed to load data from API.');
         console.error(err);
       } finally {
         setIsLoading(false);
@@ -58,13 +54,12 @@ export default function AdminDashboard() {
     loadData();
   }, []);
 
-  // Redirect if not authenticated
+  // Redirect if not authenticated (but wait for auth to load first)
   useEffect(() => {
-    // TODO: Uncomment when auth is implemented
-    // if (!isAuthenticated) {
-    //   navigate('/login');
-    // }
-  }, [isAuthenticated, navigate]);
+    if (!authLoading && !isAuthenticated) {
+      navigate('/login');
+    }
+  }, [isAuthenticated, authLoading, navigate]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -79,7 +74,7 @@ export default function AdminDashboard() {
     if (file) {
       setFormData((prev) => ({
         ...prev,
-        image: file.name,
+        image: file,
       }));
     }
   };
@@ -91,24 +86,23 @@ export default function AdminDashboard() {
     }
 
     try {
-      // TODO: Replace with actual API call when backend is ready
-      // const response = await productAPI.create({
-      //   name: formData.name,
-      //   price: parseFloat(formData.price),
-      //   image: formData.image,
-      // });
-      // setProducts([...products, response.data]);
+      const data = new FormData();
+      data.append('name', formData.name);
+      data.append('price', parseFloat(formData.price));
+      data.append('available', true);
+      if (formData.image) {
+        data.append('image', formData.image);
+      }
 
-      const newProduct = {
-        id: Math.max(...products.map((p) => p.id), 0) + 1,
-        name: formData.name,
-        price: parseFloat(formData.price),
-        available: true,
-      };
-
-      setProducts([...products, newProduct]);
-      setFormData({ name: '', price: '', image: null });
-      alert('Product added successfully!');
+      const response = await apiClient.post('/products/', data, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      
+      if (response.data.success) {
+        setProducts([...products, response.data.product]);
+        setFormData({ name: '', price: '', image: null });
+        alert('Product added successfully!');
+      }
     } catch (err) {
       console.error(err);
       alert('Failed to add product');
@@ -126,22 +120,29 @@ export default function AdminDashboard() {
 
   const handleSaveEdit = async () => {
     try {
-      // TODO: Replace with actual API call when backend is ready
-      // await productAPI.update(editingProduct, {
-      //   name: formData.name,
-      //   price: parseFloat(formData.price),
-      // });
+      const data = new FormData();
+      data.append('name', formData.name);
+      data.append('price', parseFloat(formData.price));
+      if (formData.image) {
+        data.append('image', formData.image);
+      }
 
-      setProducts(
-        products.map((p) =>
-          p.id === editingProduct
-            ? { ...p, name: formData.name, price: parseFloat(formData.price) }
-            : p
-        )
-      );
-      setEditingProduct(null);
-      setFormData({ name: '', price: '', image: null });
-      alert('Product updated successfully!');
+      const response = await apiClient.patch(`/products/${editingProduct}/`, data, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      
+      if (response.data.success) {
+        setProducts(
+          products.map((p) =>
+            p.id === editingProduct
+              ? { ...response.data.product }
+              : p
+          )
+        );
+        setEditingProduct(null);
+        setFormData({ name: '', price: '', image: null });
+        alert('Product updated successfully!');
+      }
     } catch (err) {
       console.error(err);
       alert('Failed to update product');
@@ -151,11 +152,13 @@ export default function AdminDashboard() {
   const handleDeleteProduct = async (id) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       try {
-        // TODO: Replace with actual API call when backend is ready
-        // await productAPI.delete(id);
-
-        setProducts(products.filter((p) => p.id !== id));
-        alert('Product deleted successfully!');
+        const response = await productAPI.delete(id);
+        
+        // Handle 204 NO_CONTENT response (standard for successful delete)
+        if (response.status === 204 || response.data?.success) {
+          setProducts(products.filter((p) => p.id !== id));
+          alert('Product deleted successfully!');
+        }
       } catch (err) {
         console.error(err);
         alert('Failed to delete product');
@@ -165,14 +168,16 @@ export default function AdminDashboard() {
 
   const handleToggleAvailability = async (id) => {
     try {
-      // TODO: Replace with actual API call when backend is ready
-      // await productAPI.update(id, { available: !product.available });
-
-      setProducts(
-        products.map((p) =>
-          p.id === id ? { ...p, available: !p.available } : p
-        )
-      );
+      const product = products.find((p) => p.id === id);
+      const response = await productAPI.update(id, { available: !product.available });
+      
+      if (response.data.success) {
+        setProducts(
+          products.map((p) =>
+            p.id === id ? { ...p, available: !p.available } : p
+          )
+        );
+      }
     } catch (err) {
       console.error(err);
       alert('Failed to update availability');
@@ -181,15 +186,16 @@ export default function AdminDashboard() {
 
   const handleMarkAsReady = async (orderId) => {
     try {
-      // TODO: Replace with actual API call when backend is ready
-      // await orderAPI.updateStatus(orderId, 'ready');
-
-      setOrders(
-        orders.map((order) =>
-          order.id === orderId ? { ...order, status: 'ready' } : order
-        )
-      );
-      alert('Order marked as ready!');
+      const response = await orderAPI.updateStatus(orderId, 'ready');
+      
+      if (response.data.success) {
+        setOrders(
+          orders.map((order) =>
+            order.id === orderId ? { ...order, status: 'ready' } : order
+          )
+        );
+        alert('Order marked as ready!');
+      }
     } catch (err) {
       console.error(err);
       alert('Failed to update order');
@@ -201,13 +207,27 @@ export default function AdminDashboard() {
     navigate('/login');
   };
 
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-yellow-50 flex items-center justify-center">
+        <p className="text-2xl text-teal-700 font-bold">Loading...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-yellow-50">
       {/* Top Banner */}
-      <div className="bg-teal-700 text-white py-3 px-4 flex justify-between items-center">
-        <p className="text-center flex-1">
-          start your day right with <span className="underline">White Hat.</span>
-        </p>
+      <div className="bg-teal-700 text-white py-4 px-4 flex justify-between items-center">
+        {/* Logo & Tagline */}
+        <div className="flex items-center gap-4 flex-1">
+          <Logo white={false} />
+          <div className="flex flex-col">
+            <h1 className="font-bold text-lg">White Hat Coffee</h1>
+            <p className="text-sm">start your day right with White Hat.</p>
+          </div>
+        </div>
+        {/* Sign Out Button */}
         <Button variant="outline" onClick={handleSignOut} className="px-4 py-1">
           Sign Out
         </Button>
@@ -304,7 +324,14 @@ export default function AdminDashboard() {
                   <span className="text-sm text-gray-600">ADD PICTURE</span>
                 </label>
                 {formData.image && (
-                  <p className="text-sm text-green-600 mt-2">✓ {formData.image}</p>
+                  <div className="mt-3">
+                    <p className="text-sm text-green-600">✓ {formData.image.name}</p>
+                    <img 
+                      src={URL.createObjectURL(formData.image)} 
+                      alt="Preview" 
+                      className="mt-2 h-20 w-20 object-cover rounded border"
+                    />
+                  </div>
                 )}
               </div>
 
@@ -351,6 +378,7 @@ export default function AdminDashboard() {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="bg-yellow-200">
+                      <th className="px-3 py-2 text-left font-bold">Image</th>
                       <th className="px-3 py-2 text-left font-bold">Product Name</th>
                       <th className="px-3 py-2 text-left font-bold">Price</th>
                       <th className="px-3 py-2 text-left font-bold">Status</th>
@@ -360,8 +388,19 @@ export default function AdminDashboard() {
                   <tbody>
                     {products.map((product) => (
                       <tr key={product.id} className="border-b hover:bg-gray-50">
+                        <td className="px-3 py-2">
+                          {product.image_url ? (
+                            <img 
+                              src={product.image_url} 
+                              alt={product.name}
+                              className="h-16 w-16 object-cover rounded"
+                            />
+                          ) : (
+                            <span className="text-2xl">☕</span>
+                          )}
+                        </td>
                         <td className="px-3 py-2">{product.name}</td>
-                        <td className="px-3 py-2">PHP {product.price.toFixed(2)}</td>
+                        <td className="px-3 py-2">PHP {parseFloat(product.price).toFixed(2)}</td>
                         <td className="px-3 py-2">
                           <span
                             className={`px-3 py-1 rounded text-xs font-bold text-white ${
@@ -385,6 +424,12 @@ export default function AdminDashboard() {
                             } hover:opacity-90`}
                           >
                             {product.available ? 'Hide' : 'Show'}
+                          </button>
+                          <button
+                            onClick={() => handleDeleteProduct(product.id)}
+                            className="px-2 py-1 rounded text-xs font-bold text-white bg-red-700 hover:bg-red-800"
+                          >
+                            Delete
                           </button>
                         </td>
                       </tr>
@@ -562,7 +607,7 @@ export default function AdminDashboard() {
                       </span>
                     </div>
                     <h3 className="text-xl font-bold text-gray-800 mb-2">{order.customerName.toUpperCase()}</h3>
-                    <p className="text-lg font-bold text-gray-700 mb-4">PHP {order.totalPrice.toFixed(2)}</p>
+                    <p className="text-lg font-bold text-gray-700 mb-4">PHP {parseFloat(order.totalPrice).toFixed(2)}</p>
                     <div className="mb-4">
                       {order.items.map((item, idx) => (
                         <p key={idx} className="text-sm text-gray-700">

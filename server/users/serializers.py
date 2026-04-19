@@ -10,7 +10,8 @@ class UserSerializer(serializers.ModelSerializer):
     """Serializer for User model"""
     class Meta:
         model = User
-        fields = ('id', 'email', 'first_name', 'last_name', 'phone_number', 'is_superuser', 'is_staff')
+        fields = ('id', 'email', 'first_name', 'last_name', 'phone_number', 'is_superuser', 'is_staff', 
+                  'building_number', 'street_name', 'street_address', 'state', 'city')
         read_only_fields = ('id', 'is_superuser', 'is_staff')
 
 
@@ -83,3 +84,12 @@ class LoginSerializer(serializers.Serializer):
         
         data['user'] = user
         return data
+
+
+class CustomerProfileSerializer(serializers.ModelSerializer):
+    """Serializer for customer profile with address fields"""
+    class Meta:
+        model = User
+        fields = ('id', 'email', 'first_name', 'last_name', 'phone_number', 
+                  'building_number', 'street_name', 'street_address', 'state', 'city')
+        read_only_fields = ('id', 'email')

@@ -58,37 +58,49 @@ export const customerAPI = {
 
 // Product APIs
 export const productAPI = {
-  getAll: () => apiClient.get('/products'),
-  getById: (id) => apiClient.get(`/products/${id}`),
-  create: (productData) => apiClient.post('/products', productData),
-  update: (id, productData) => apiClient.put(`/products/${id}`, productData),
-  delete: (id) => apiClient.delete(`/products/${id}`),
+  getAll: () =>
+    apiClient.get('/products/'),
+  getAdminList: () =>
+    apiClient.get('/products/admin_list/'),
+  getById: (id) =>
+    apiClient.get(`/products/${id}/`),
+  create: (productData) =>
+    apiClient.post('/products/', productData),
+  update: (id, productData) =>
+    apiClient.patch(`/products/${id}/`, productData),
+  delete: (id) =>
+    apiClient.delete(`/products/${id}/`),
 };
 
 // Order APIs
 export const orderAPI = {
-  getAll: () => apiClient.get('/orders'),
-  getById: (id) => apiClient.get(`/orders/${id}`),
-  create: (orderData) => apiClient.post('/orders', orderData),
-  updateStatus: (id, status) => apiClient.patch(`/orders/${id}/status`, { status }),
+  getAll: () =>
+    apiClient.get('/orders/'),
+  getById: (id) =>
+    apiClient.get(`/orders/${id}/`),
+  createFromCart: (orderData) =>
+    apiClient.post('/orders/create_from_cart/', orderData),
+  updateStatus: (id, status) =>
+    apiClient.patch(`/orders/${id}/update_status/`, { status }),
+  cancel: (id) =>
+    apiClient.post(`/orders/${id}/cancel_order/`),
 };
 
 // Feedback APIs
 export const feedbackAPI = {
-  submit: (feedbackData) => apiClient.post('/feedback', feedbackData),
-  getAll: () => apiClient.get('/feedback'),
-};
-
-// Customer APIs
-export const customerAPI = {
-  getProfile: () => apiClient.get('/customers/profile'),
-  updateProfile: (profileData) => apiClient.put('/customers/profile', profileData),
+  submit: (feedbackData) =>
+    apiClient.post('/feedback/', feedbackData),
+  getAll: () =>
+    apiClient.get('/feedback/'),
 };
 
 // Sentiment Analysis APIs
 export const sentimentAPI = {
-  getAnalysis: () => apiClient.get('/sentiment/analysis'),
-  getTrends: () => apiClient.get('/sentiment/trends'),
+  getAnalysis: () =>
+    apiClient.get('/sentiment/analysis/'),
+  getTrends: () =>
+    apiClient.get('/sentiment/trends/'),
 };
 
+export { apiClient };
 export default apiClient;
