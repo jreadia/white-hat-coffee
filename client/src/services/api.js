@@ -48,6 +48,14 @@ export const authAPI = {
   },
 };
 
+// Customer Profile APIs
+export const customerAPI = {
+  getProfile: () =>
+    apiClient.get('/customer/profile/'),
+  updateProfile: (profileData) =>
+    apiClient.post('/customer/profile/', profileData),
+};
+
 // Product APIs
 export const productAPI = {
   getAll: () => apiClient.get('/products'),
