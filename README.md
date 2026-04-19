@@ -6,7 +6,10 @@ Full-stack web application for ordering specialty coffee online. Built with Reac
 - User authentication with JWT tokens
 - Product ordering and checkout
 - Admin dashboard with product management and image uploads
-- Real-time order status tracking
+- Real-time order status tracking (admin view & customer history)
+- Admin order management (view, update status, cancel orders)
+- Customer order history with color-coded status badges
+- Product image uploads with FormData multipart
 - Responsive UI with Tailwind CSS
 
 ---
@@ -83,12 +86,18 @@ Frontend runs on: `http://localhost:3001`
 - **Email:** `admin@test.com`
 - **Password:** `admin123`
 - **Access:** Admin dashboard at `/admin`
-- **Features:** Create, edit, delete products with image uploads
+- **Features:**
+  - Create, edit, delete products with image uploads
+  - View all customer orders in real-time
+  - Update order status (Pending → Confirmed → Preparing → Ready → Completed)
+  - Cancel orders with confirmation dialog
 
 ### Regular User
 - Create a new account via the **SIGN UP** button
 - Browse products on the Menu page
 - Add items to cart and checkout
+- View order history and track order status at `/orders`
+- Receive real-time updates on order status changes
 
 ---
 
@@ -140,9 +149,10 @@ white-hat-coffee/
 - `DELETE /api/products/{id}/` - Delete product (admin only)
 
 ### Orders
-- `GET /api/orders/` - Get user's orders
+- `GET /api/orders/` - Get user's orders (or all orders for admin)
 - `POST /api/orders/create_from_cart/` - Create order from cart
 - `PATCH /api/orders/{id}/update_status/` - Update order status (admin only)
+- `POST /api/orders/{id}/cancel_order/` - Cancel order (admin only)
 
 ### Customer Profile
 - `GET /api/customer/profile/` - Get user profile
