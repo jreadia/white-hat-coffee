@@ -92,15 +92,16 @@ export const feedbackAPI = {
     apiClient.post('/feedback/', feedbackData),
   getAll: () =>
     apiClient.get('/feedback/'),
+  getAnalytics: () =>
+    apiClient.get('/feedback/analytics/'),
+  getRecent: () =>
+    apiClient.get('/feedback/recent/'),
+  checkModel: () =>
+    apiClient.post('/feedback/check_model/'),
 };
 
-// Sentiment Analysis APIs
-export const sentimentAPI = {
-  getAnalysis: () =>
-    apiClient.get('/sentiment/analysis/'),
-  getTrends: () =>
-    apiClient.get('/sentiment/trends/'),
-};
+// Sentiment Analysis APIs (integrated with Feedback)
+// Use feedbackAPI.getAnalytics() and feedbackAPI.getRecent() instead
 
 export { apiClient };
 export default apiClient;

@@ -11,6 +11,7 @@ from rest_framework_simplejwt.views import TokenRefreshView
 from users.views import SignUpViewSet, LoginViewSet, CustomerProfileViewSet
 from products.views import ProductViewSet
 from orders.views import OrderViewSet
+from feedback.views import FeedbackViewSet
 
 # Create a router for API endpoints
 router = routers.DefaultRouter()
@@ -19,6 +20,7 @@ router.register(r'auth/login', LoginViewSet, basename='login')
 router.register(r'customer/profile', CustomerProfileViewSet, basename='profile')
 router.register(r'products', ProductViewSet, basename='product')
 router.register(r'orders', OrderViewSet, basename='order')
+router.register(r'feedback', FeedbackViewSet, basename='feedback')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
