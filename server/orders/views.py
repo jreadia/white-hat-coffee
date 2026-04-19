@@ -99,3 +99,15 @@ class OrderViewSet(viewsets.ModelViewSet):
             'order': serializer.data,
             'message': 'Order cancelled successfully'
         })
+    
+    @action(detail=True, methods=['delete'], permission_classes=[IsAdminUser])
+    def delete_order(self, request, pk=None):
+        """Delete an order (admin only)"""
+        order = self.get_object()
+        order_id = order.id
+        order.delete()
+        
+        return Response({
+            'success': True,
+            'message': f'Order #{order_id} deleted successfully'
+        }, status=status.HTTP_204_NO_CONTENT)

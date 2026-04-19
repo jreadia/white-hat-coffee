@@ -84,6 +84,8 @@ export const orderAPI = {
     apiClient.patch(`/orders/${id}/update_status/`, { status }),
   cancel: (id) =>
     apiClient.post(`/orders/${id}/cancel_order/`),
+  delete: (id) =>
+    apiClient.delete(`/orders/${id}/delete_order/`),
 };
 
 // Feedback APIs

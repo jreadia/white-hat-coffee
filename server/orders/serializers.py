@@ -26,12 +26,21 @@ class OrderItemSerializer(serializers.ModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     """Serializer for Order model"""
     items = OrderItemSerializer(many=True, read_only=True)
-    user_email = serializers.CharField(source='user.email', read_only=True)
+    user = serializers.SerializerMethodField()
+    
+    def get_user(self, obj):
+        """Return user object with email"""
+        return {
+            'id': obj.user.id,
+            'email': obj.user.email,
+            'first_name': obj.user.first_name,
+            'last_name': obj.user.last_name,
+        }
     
     class Meta:
         model = Order
-        fields = ('id', 'user_email', 'total_price', 'payment_method', 'status', 'items', 'created_at', 'updated_at')
-        read_only_fields = ('id', 'user_email', 'created_at', 'updated_at')
+        fields = ('id', 'user', 'total_price', 'payment_method', 'status', 'items', 'created_at', 'updated_at')
+        read_only_fields = ('id', 'user', 'created_at', 'updated_at')
 
 
 class OrderCreateSerializer(serializers.Serializer):

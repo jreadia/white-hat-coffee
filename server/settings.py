@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
+    'storages',
     
     # Local apps
     'users',
@@ -169,3 +170,36 @@ CORS_ALLOW_HEADERS = [
     'x-csrftoken',
     'x-requested-with',
 ]
+
+# Supabase Storage Configuration (S3-compatible)
+if config('USE_SUPABASE_STORAGE', default=False, cast=bool):
+    # Storage backend
+    STORAGES = {
+        'default': {
+            'BACKEND': 'storages.backends.s3boto3.S3Boto3Storage',
+            'OPTIONS': {
+                'bucket_name': config('AWS_STORAGE_BUCKET_NAME', default=''),
+                'region_name': config('AWS_S3_REGION_NAME', default='ap-northeast-1'),
+                'endpoint_url': config('AWS_S3_ENDPOINT_URL', default=''),
+                'access_key': config('AWS_ACCESS_KEY_ID', default=''),
+                'secret_key': config('AWS_SECRET_ACCESS_KEY', default=''),
+                'querystring_auth': False,  # Disable signed URLs for public bucket
+                'default_acl': 'public-read',  # Set public ACL by default
+            }
+        },
+        'staticfiles': {
+            'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage',
+        }
+    }
+    # Use S3 for media files
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+else:
+    # Default local storage
+    STORAGES = {
+        'default': {
+            'BACKEND': 'django.core.files.storage.FileSystemStorage',
+        },
+        'staticfiles': {
+            'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage',
+        }
+    }

@@ -241,6 +241,20 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleDeleteOrder = async (orderId) => {
+    if (window.confirm('Are you sure you want to delete this order? This action cannot be undone.')) {
+      try {
+        await orderAPI.delete(orderId);
+        
+        setOrders(orders.filter((order) => order.id !== orderId));
+        alert('Order deleted successfully');
+      } catch (err) {
+        console.error(err);
+        alert('Failed to delete order');
+      }
+    }
+  };
+
   const handleSignOut = () => {
     logout();
     navigate('/login');
@@ -560,6 +574,14 @@ export default function AdminDashboard() {
                           )}
                           {order.status === 'completed' && (
                             <span className="text-green-600 font-bold">✓ Done</span>
+                          )}
+                          {(order.status === 'cancelled' || order.status === 'completed') && (
+                            <button
+                              onClick={() => handleDeleteOrder(order.id)}
+                              className="ml-2 px-3 py-1 bg-gray-700 text-white font-bold text-sm rounded hover:bg-gray-800 transition"
+                            >
+                              Delete
+                            </button>
                           )}
                         </td>
                       </tr>
