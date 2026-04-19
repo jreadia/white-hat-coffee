@@ -39,9 +39,9 @@ apiClient.interceptors.response.use(
 // Auth APIs
 export const authAPI = {
   login: (email, password) =>
-    apiClient.post('/auth/login', { email, password }),
+    apiClient.post('/auth/login/', { email, password }),
   signup: (userData) =>
-    apiClient.post('/auth/signup', userData),
+    apiClient.post('/auth/signup/', userData),
   logout: () => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('user');

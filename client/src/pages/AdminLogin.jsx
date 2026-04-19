@@ -5,21 +5,23 @@ import Logo from '../components/Logo';
 import FormInput from '../components/FormInput';
 import Button from '../components/Button';
 
-export default function Login() {
+export default function AdminLogin() {
   const navigate = useNavigate();
-  const { login, isLoading, isAuthenticated } = useAuth();
+  const { login, isLoading, isAuthenticated, user } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  // Redirect if already logged in
+  // Redirect if already logged in as admin
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/menu');
+    if (isAuthenticated && user?.is_superuser) {
+      navigate('/admin');
+    } else if (isAuthenticated && !user?.is_superuser) {
+      setError('You must be an admin to access this page');
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, user, navigate]);
 
-  const handleLogin = async (e) => {
+  const handleAdminLogin = async (e) => {
     e.preventDefault();
     setError('');
 
@@ -30,24 +32,21 @@ export default function Login() {
 
     const result = await login(email, password);
     if (result.success) {
-      // Check if user is admin and redirect accordingly
-      if (result.user.is_superuser) {
+      // Check if user is admin
+      const user = result.user;
+      if (user.is_superuser) {
         navigate('/admin');
       } else {
-        navigate('/menu');
+        setError('You must be an admin to access this page');
       }
     } else {
       setError(result.error);
     }
   };
 
-  const handleSignUp = () => {
-    navigate('/signup');
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-teal-700 to-teal-900 flex flex-col items-center justify-center px-4">
-      {/* Back to Home Button */}
+      {/* Back Button */}
       <button
         onClick={() => navigate('/')}
         className="absolute top-6 left-6 text-white hover:text-gray-200 transition"
@@ -60,14 +59,14 @@ export default function Login() {
         <Logo clickable={true} />
       </div>
 
-      {/* Welcome Section */}
-      <h1 className="text-5xl font-bold text-white mb-3 text-center">WELCOME</h1>
+      {/* Admin Login Heading */}
+      <h1 className="text-5xl font-bold text-white mb-3 text-center">ADMIN LOGIN</h1>
       <p className="text-lg text-gray-100 mb-10 text-center">
-        start your day right with <span className="font-semibold">White Hat.</span>
+        Staff only access
       </p>
 
       {/* Login Form */}
-      <form onSubmit={handleLogin} className="w-full max-w-sm bg-white bg-opacity-10 backdrop-blur rounded-lg p-8">
+      <form onSubmit={handleAdminLogin} className="w-full max-w-sm bg-white bg-opacity-10 backdrop-blur rounded-lg p-8">
         {error && (
           <div className="mb-4 p-3 bg-red-500 text-white rounded-md text-sm">
             {error}
@@ -85,7 +84,7 @@ export default function Login() {
               setEmail(e.target.value);
               setError('');
             }}
-            placeholder="Enter your email"
+            placeholder="Enter your admin email"
           />
         </div>
 
@@ -104,13 +103,10 @@ export default function Login() {
           />
         </div>
 
-        {/* Buttons */}
-        <div className="flex gap-4 justify-center">
+        {/* Login Button */}
+        <div className="flex justify-center">
           <Button type="submit" variant="secondary" disabled={isLoading}>
-            {isLoading ? 'LOGGING IN...' : 'LOGIN'}
-          </Button>
-          <Button type="button" variant="secondary" onClick={handleSignUp} disabled={isLoading}>
-            SIGN UP
+            {isLoading ? 'LOGGING IN...' : 'LOGIN AS ADMIN'}
           </Button>
         </div>
       </form>

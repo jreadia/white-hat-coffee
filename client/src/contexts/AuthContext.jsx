@@ -54,10 +54,19 @@ export const AuthProvider = ({ children }) => {
     setError(null);
     try {
       const response = await authAPI.signup(userData);
-      // Signup typically doesn't auto-login, user needs to login after
-      return { success: true, message: 'Signup successful. Please log in.' };
+      const { user, token, message } = response.data;
+      
+      // Auto-login user after signup
+      localStorage.setItem('authToken', token);
+      localStorage.setItem('user', JSON.stringify(user));
+      
+      setUser(user);
+      setIsAuthenticated(true);
+      return { success: true, message: message || 'Signup successful!' };
     } catch (err) {
-      const errorMessage = err.response?.data?.message || 'Signup failed';
+      const errorMessage = err.response?.data?.errors?.email?.[0] || 
+                          err.response?.data?.message || 
+                          'Signup failed';
       setError(errorMessage);
       return { success: false, error: errorMessage };
     } finally {

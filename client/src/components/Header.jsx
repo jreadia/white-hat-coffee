@@ -1,10 +1,17 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import Logo from './Logo';
 import Button from './Button';
 
 export default function Header() {
   const navigate = useNavigate();
+  const { isAuthenticated, user, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   return (
     <header className="bg-white shadow-sm">
@@ -20,21 +27,38 @@ export default function Header() {
         </div>
 
         {/* Auth Buttons */}
-        <div className="flex gap-4">
-          <Button 
-            variant="outline" 
-            onClick={() => navigate('/login')}
-            className="px-6 py-2"
-          >
-            Login
-          </Button>
-          <Button 
-            variant="primary" 
-            onClick={() => navigate('/signup')}
-            className="px-6 py-2"
-          >
-            Sign Up
-          </Button>
+        <div className="flex gap-4 items-center">
+          {isAuthenticated ? (
+            <>
+              <span className="text-gray-700 text-sm">
+                Welcome, <span className="font-semibold">{user?.first_name || user?.email}</span>
+              </span>
+              <Button 
+                variant="outline" 
+                onClick={handleLogout}
+                className="px-6 py-2"
+              >
+                Logout
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button 
+                variant="outline" 
+                onClick={() => navigate('/login')}
+                className="px-6 py-2"
+              >
+                Login
+              </Button>
+              <Button 
+                variant="primary" 
+                onClick={() => navigate('/signup')}
+                className="px-6 py-2"
+              >
+                Sign Up
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </header>

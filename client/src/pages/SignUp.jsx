@@ -62,18 +62,23 @@ export default function SignUp() {
       return;
     }
 
-    // TODO: Uncomment when backend is ready
-    // const result = await signup(formData);
-    // if (result.success) {
-    //   alert(result.message);
-    //   navigate('/login');
-    // } else {
-    //   setErrors({ submit: result.error });
-    // }
+    // Convert camelCase to snake_case for API
+    const apiData = {
+      email: formData.email,
+      first_name: formData.firstName,
+      last_name: formData.lastName,
+      phone_number: formData.phoneNumber,
+      password: formData.password,
+      password_confirm: formData.confirmPassword,
+    };
 
-    // For now, simulate signup
-    console.log('Sign up data:', formData);
-    alert('Backend API not connected yet. Form validation working correctly!');
+    const result = await signup(apiData);
+    if (result.success) {
+      alert(result.message || 'Account created successfully!');
+      navigate('/menu');
+    } else {
+      setErrors({ submit: result.error });
+    }
   };
 
   return (

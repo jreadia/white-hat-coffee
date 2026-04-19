@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../contexts/CartContext';
+import { useAuth } from '../contexts/AuthContext';
+import Header from '../components/Header';
 import Button from '../components/Button';
 
 const Menu = () => {
@@ -62,32 +64,10 @@ const Menu = () => {
     navigate('/checkout');
   };
 
-  // Handle Logout
-  const handleLogout = () => {
-    navigate('/login');
-  };
-
   return (
     <div className="min-h-screen bg-amber-50">
-      {/* Header */}
-      <div className="bg-teal-800 text-white py-2 px-6 text-center">
-        <p className="text-sm">start your day right with <span className="font-bold">White Hat</span>.</p>
-      </div>
-
-      {/* Navigation Bar */}
-      <div className="bg-amber-50 px-6 py-4 flex justify-between items-center border-b-2 border-gray-300">
-        <div className="flex gap-8">
-          <button onClick={() => navigate('/')} className="text-gray-800 font-semibold hover:text-teal-700">
-            HOME
-          </button>
-          <button onClick={() => window.scrollTo(0, 0)} className="text-gray-800 font-semibold hover:text-teal-700">
-            ABOUT US
-          </button>
-        </div>
-        <button onClick={handleLogout} className="text-gray-800 font-semibold hover:text-teal-700">
-          LOG OUT
-        </button>
-      </div>
+      {/* Header with logout button */}
+      <Header />
 
       {/* Main Content */}
       <div className="flex min-h-screen bg-amber-50">
