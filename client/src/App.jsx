@@ -8,6 +8,7 @@ import SignUp from './pages/SignUp';
 import Feedback from './pages/Feedback';
 import Menu from './pages/Menu';
 import Checkout from './pages/Checkout';
+import Orders from './pages/Orders';
 import AdminDashboard from './pages/AdminDashboard';
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
             <Route path="/signup" element={<SignUp />} />
             <Route path="/feedback" element={<Feedback />} />
             <Route path="/menu" element={<Menu />} />
+            <Route path="/orders" element={<Orders />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/admin" element={<AdminDashboard />} />
           </Routes>

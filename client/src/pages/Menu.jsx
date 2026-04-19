@@ -115,8 +115,14 @@ const Menu = () => {
 
             <hr className="my-6 border-gray-300" />
 
-            {/* Checkout Button */}
-            <div className="pt-4">
+            {/* Orders and Checkout Buttons */}
+            <div className="pt-4 space-y-3">
+              <button
+                onClick={() => navigate('/orders')}
+                className="w-full bg-teal-700 hover:bg-teal-800 text-white font-bold py-3 px-4 rounded-lg transition"
+              >
+                MY ORDERS
+              </button>
               <button
                 onClick={handleCheckout}
                 className="w-full bg-yellow-700 hover:bg-yellow-800 text-white font-bold py-3 px-4 rounded-lg transition"

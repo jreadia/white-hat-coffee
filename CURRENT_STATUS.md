@@ -1,6 +1,6 @@
 # White Hat Coffee - Current Working Status
 
-**Last Updated:** April 19, 2026 - 4:30 PM
+**Last Updated:** April 19, 2026 - 5:00 PM
 
 ## 🎯 Project Overview
 Full-stack React + Django coffee shop web application with authentication, product ordering, and admin dashboard.
@@ -11,6 +11,17 @@ Full-stack React + Django coffee shop web application with authentication, produ
 - ✅ Admin dashboard shows same products as customers (productAPI.getAdminList)
 - ✅ Logo component added to admin dashboard header
 - ✅ Website favicon added (coffee cup emoji in teal circle)
+- ✅ **Iteration 1: Admin Order Management** - Complete
+  - Order table with ID, customer, items, total, status, date
+  - Status dropdown for updating (Pending → Confirmed → Preparing → Ready → Completed)
+  - Cancel order button with confirmation
+  - Real-time UI updates without page refresh
+- ✅ **Iteration 2: Customer Order History** - Complete
+  - Orders page created at `/orders` route
+  - Shows customer's order history in table format
+  - Color-coded status badges
+  - Order ID, items count, total price, payment method, date
+  - Tested with real order placement
 
 ---
 
@@ -128,59 +139,46 @@ Full-stack React + Django coffee shop web application with authentication, produ
 - [x] Product availability toggle
 - [x] Logo component integration
 - [x] Favicon added to browser tab
-- [ ] Order management UI (view, update status, cancel)
+- [x] Order management UI (view all orders, update status, cancel)
 - [ ] User management UI
+- [ ] Analytics dashboard
+
+### Customer Features
+- [x] Orders page (`/orders` route)
+- [x] View order history
+- [x] Status tracking with color badges
+- [ ] Order detail view (expand to see items)
+- [ ] Order reorder functionality
 
 ---
 
 ## 📝 Pending Features
 
-### Priority 1 - Admin Dashboard (In Progress)
-- [x] Product CRUD operations
-- [x] Image upload functionality
-- [x] Product availability toggle
-- [x] Logo branding
-- [x] Website favicon
-- [ ] Order management UI (view, update status, cancel)
-- [ ] User management UI
-- [ ] Analytics dashboard
+### Priority 1 - Sentiment Analysis (In Progress)
+- [ ] Feedback API endpoints (POST, GET)
+- [ ] Feedback page form integration
+- [ ] Sentiment analysis model integration (using existing model)
+- [ ] Analytics dashboard for admin
 
 ### Priority 2 - Order Enhancements
-- [ ] **Order History Page**
-  - View past orders
-  - Track order status in real-time
-  - Reorder from past orders
-
-- [ ] **Email Notifications**
-  - Order confirmation email
-  - Order status update emails
-  - Ready for pickup notification
+- [ ] Order detail view (expand orders to see items)
+- [ ] Reorder from past orders
+- [ ] Email notifications (order confirmation, status updates)
 
 ### Priority 3 - Admin Features
-- [ ] **Admin Dashboard Implementation**
-  - Product management UI (CRUD)
-  - Order management UI (view, update status, cancel)
-  - User management UI
-  - Feedback/sentiment analysis dashboard
-  - Sales analytics and reports
-
-- [ ] **Admin Product Management Panel**
-  - Add new products
-  - Edit existing products
-  - Delete products
-  - View/manage inventory
+- [ ] User management UI
+- [ ] Sales analytics and reports
+- [ ] Order analytics
 
 ### Priority 4 - Enhancements
-- [ ] Add product categories
-- [ ] Add product images upload functionality
-- [ ] Product search and filtering
-- [ ] Payment gateway integration (GCash, COD verification)
-- [ ] Order notes/special instructions
+- [ ] Product categories and filtering
+- [ ] Search functionality
+- [ ] Payment gateway integration
 
 ### Priority 5 - Production
-- [ ] Migrate from SQLite to PostgreSQL
-- [ ] Environment variables (separate .env for production)
-- [ ] Deploy to production server
+- [ ] PostgreSQL migration
+- [ ] Environment variables setup
+- [ ] Server deployment
 
 ---
 

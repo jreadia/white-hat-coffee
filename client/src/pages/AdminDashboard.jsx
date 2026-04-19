@@ -202,6 +202,44 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleUpdateStatus = async (orderId, newStatus) => {
+    try {
+      const response = await orderAPI.updateStatus(orderId, newStatus);
+      
+      if (response.data.success) {
+        setOrders(
+          orders.map((order) =>
+            order.id === orderId ? { ...order, status: newStatus } : order
+          )
+        );
+        alert(`Order status updated to ${newStatus}`);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Failed to update order status');
+    }
+  };
+
+  const handleCancelOrder = async (orderId) => {
+    if (window.confirm('Are you sure you want to cancel this order?')) {
+      try {
+        const response = await orderAPI.cancel(orderId);
+        
+        if (response.data.success) {
+          setOrders(
+            orders.map((order) =>
+              order.id === orderId ? { ...order, status: 'cancelled' } : order
+            )
+          );
+          alert('Order cancelled successfully');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Failed to cancel order');
+      }
+    }
+  };
+
   const handleSignOut = () => {
     logout();
     navigate('/login');
@@ -596,44 +634,91 @@ export default function AdminDashboard() {
         {/* Pending Orders Tab */}
         {activeTab === 'orders' && (
           <div className="border-2 border-gray-400 rounded-lg p-8 bg-white">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">Pending Orders</h2>
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">ORDER MANAGEMENT</h2>
+            
             {orders.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {orders.filter(order => order.status === 'pending').map((order) => (
-                  <div key={order.id} className="border-2 border-gray-400 rounded-lg p-6 bg-yellow-50">
-                    <div className="mb-4">
-                      <span className="inline-block px-3 py-1 bg-yellow-300 text-gray-800 text-xs font-bold rounded">
-                        Processing
-                      </span>
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-800 mb-2">{order.customerName.toUpperCase()}</h3>
-                    <p className="text-lg font-bold text-gray-700 mb-4">PHP {parseFloat(order.totalPrice).toFixed(2)}</p>
-                    <div className="mb-4">
-                      {order.items.map((item, idx) => (
-                        <p key={idx} className="text-sm text-gray-700">
-                          <span className="font-bold">›</span> {item.quantity}x {item.name}
-                        </p>
-                      ))}
-                    </div>
-                    <p className="text-sm text-gray-600 mb-6">{order.paymentMethod}</p>
-                    <Button 
-                      variant="dark" 
-                      className="w-full flex items-center justify-center gap-2"
-                      onClick={() => handleMarkAsReady(order.id)}
-                    >
-                      <span>✓</span> Mark as Ready
-                    </Button>
-                  </div>
-                ))}
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse">
+                  <thead>
+                    <tr className="bg-yellow-200 border-2 border-gray-400">
+                      <th className="border-2 border-gray-400 px-4 py-3 font-bold text-left">Order ID</th>
+                      <th className="border-2 border-gray-400 px-4 py-3 font-bold text-left">Customer</th>
+                      <th className="border-2 border-gray-400 px-4 py-3 font-bold text-center">Items</th>
+                      <th className="border-2 border-gray-400 px-4 py-3 font-bold text-right">Total</th>
+                      <th className="border-2 border-gray-400 px-4 py-3 font-bold text-left">Status</th>
+                      <th className="border-2 border-gray-400 px-4 py-3 font-bold text-center">Date</th>
+                      <th className="border-2 border-gray-400 px-4 py-3 font-bold text-center">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {orders.map((order) => (
+                      <tr key={order.id} className="border-2 border-gray-300 hover:bg-yellow-50">
+                        <td className="border-2 border-gray-300 px-4 py-3 font-bold text-teal-700">#{order.id}</td>
+                        <td className="border-2 border-gray-300 px-4 py-3">{order.user?.email || 'Unknown'}</td>
+                        <td className="border-2 border-gray-300 px-4 py-3 text-center">
+                          {order.items?.length || 0} item{order.items?.length !== 1 ? 's' : ''}
+                        </td>
+                        <td className="border-2 border-gray-300 px-4 py-3 text-right font-bold">
+                          PHP {parseFloat(order.total_price || 0).toFixed(2)}
+                        </td>
+                        <td className="border-2 border-gray-300 px-4 py-3">
+                          <select
+                            value={order.status}
+                            onChange={(e) => handleUpdateStatus(order.id, e.target.value)}
+                            disabled={order.status === 'cancelled' || order.status === 'completed'}
+                            className={`px-3 py-1 font-bold rounded border-2 text-sm cursor-pointer ${
+                              order.status === 'pending'
+                                ? 'bg-yellow-200 border-yellow-600 text-gray-800'
+                                : order.status === 'confirmed'
+                                ? 'bg-blue-200 border-blue-600 text-gray-800'
+                                : order.status === 'preparing'
+                                ? 'bg-purple-200 border-purple-600 text-gray-800'
+                                : order.status === 'ready'
+                                ? 'bg-green-200 border-green-600 text-gray-800'
+                                : order.status === 'completed'
+                                ? 'bg-teal-200 border-teal-600 text-gray-800'
+                                : 'bg-red-200 border-red-600 text-gray-800'
+                            } ${order.status === 'cancelled' || order.status === 'completed' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          >
+                            <option value="pending">Pending</option>
+                            <option value="confirmed">Confirmed</option>
+                            <option value="preparing">Preparing</option>
+                            <option value="ready">Ready</option>
+                            <option value="completed">Completed</option>
+                          </select>
+                        </td>
+                        <td className="border-2 border-gray-300 px-4 py-3 text-sm text-gray-600">
+                          {order.created_at ? new Date(order.created_at).toLocaleDateString() : 'N/A'}
+                        </td>
+                        <td className="border-2 border-gray-300 px-4 py-3 text-center">
+                          {order.status !== 'cancelled' && order.status !== 'completed' && (
+                            <button
+                              onClick={() => handleCancelOrder(order.id)}
+                              className="px-3 py-1 bg-red-500 text-white font-bold text-sm rounded hover:bg-red-600 transition"
+                            >
+                              Cancel
+                            </button>
+                          )}
+                          {order.status === 'cancelled' && (
+                            <span className="text-red-600 font-bold">Cancelled</span>
+                          )}
+                          {order.status === 'completed' && (
+                            <span className="text-green-600 font-bold">✓ Done</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             ) : (
-              <p className="text-gray-500 text-center py-8">No pending orders</p>
+              <p className="text-gray-500 text-center py-8">No orders yet</p>
             )}
 
             {/* Backend Note */}
             <div className="mt-8 p-4 bg-blue-50 border-2 border-blue-300 rounded">
               <p className="text-sm text-blue-800">
-                <strong>📦 Note:</strong> Orders are fetched from sample data. Once backend API is ready, orders will be loaded dynamically and "Mark as Ready" will update order status in the database.
+                <strong>📦 Status Levels:</strong> Pending → Confirmed → Preparing → Ready → Completed
               </p>
             </div>
           </div>
