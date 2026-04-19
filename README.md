@@ -21,7 +21,7 @@ Full-stack web application for ordering specialty coffee online. Built with Reac
 ## Prerequisites
 
 - **Node.js** (v16 or higher) - [Download](https://nodejs.org/)
-- **Python** (v3.8 or higher) - [Download](https://www.python.org/)
+- **Python** (v3.13.9 or higher) - [Download](https://www.python.org/)
 - **Git** - [Download](https://git-scm.com/)
 - **Supabase Account** (free tier) - [Sign up](https://supabase.com)
 
@@ -347,17 +347,17 @@ Full API documentation available at: `http://127.0.0.1:8000/api/`
 - **Django REST Framework 3.17.1** - REST API
 - **Supabase PostgreSQL** - Cloud database (automatic backups, SSL)
 - **psycopg2-binary** - PostgreSQL adapter
-- **scikit-learn 1.8.0** - Machine learning (SVM classifiers)
-- **joblib 1.5.1** - Model serialization
+- **Pillow** - Image processing for product uploads
 - **python-decouple** - Environment configuration
 - **django-cors-headers** - CORS handling
 
 ### Machine Learning
-- **Two-Stage SVM Classifier** (scikit-learn)
+- **scikit-learn 1.7.2** - Two-Stage SVM Classifier
   - Stage 1: Positive feedback detection
   - Stage 2: Negative vs Neutral classification
 - **TfidfVectorizer** - Text preprocessing & feature extraction
 - **LinearSVC** - Linear Support Vector Classifier
+- **joblib 1.5.3** - Model serialization & loading
 
 ### Infrastructure
 - **Supabase** - Cloud PostgreSQL hosting

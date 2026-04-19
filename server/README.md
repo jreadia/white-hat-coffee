@@ -2,6 +2,17 @@
 
 Django REST Framework backend for the White Hat Coffee application with JWT authentication.
 
+## Prerequisites
+
+- **Python 3.13.9** or higher
+- pip (Python package manager)
+- Virtual environment support (`venv` is included with Python)
+
+**Verify your Python version:**
+```bash
+python --version
+```
+
 ## Setup
 
 ### ⚙️ FIRST TIME SETUP ONLY (Run Once)
