@@ -124,6 +124,12 @@ const Menu = () => {
                 MY ORDERS
               </button>
               <button
+                onClick={() => navigate('/feedback')}
+                className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg transition"
+              >
+                FEEDBACK
+              </button>
+              <button
                 onClick={handleCheckout}
                 className="w-full bg-yellow-700 hover:bg-yellow-800 text-white font-bold py-3 px-4 rounded-lg transition"
               >
