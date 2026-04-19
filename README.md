@@ -76,7 +76,7 @@ Full-stack web application for ordering specialty coffee online. Built with Reac
 cd server
 
 # Create virtual environment
-python -m venv venv
+python -3.13.9 -m venv venv
 
 # Activate virtual environment
 .\venv\Scripts\Activate.ps1   # Windows PowerShell
