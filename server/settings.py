@@ -5,6 +5,7 @@ Django settings for white-hat-coffee backend
 import os
 from pathlib import Path
 from decouple import config
+import dj_database_url
 
 # Build paths inside the project
 BASE_DIR = Path(__file__).resolve().parent
@@ -42,6 +43,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -73,14 +75,9 @@ WSGI_APPLICATION = 'wsgi.application'
 
 # Database Configuration
 DATABASES = {
-    'default': {
-        'ENGINE': config('DB_ENGINE', default='django.db.backends.sqlite3'),
-        'NAME': config('DB_NAME', default=os.path.join(BASE_DIR, 'db.sqlite3')),
-        'USER': config('DB_USER', default=''),
-        'PASSWORD': config('DB_PASSWORD', default=''),
-        'HOST': config('DB_HOST', default=''),
-        'PORT': config('DB_PORT', default=''),
-    }
+    'default': dj_database_url.config(
+        default=config('DATABASE_URL', default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}")
+    )
 }
 
 # Password validation
@@ -108,6 +105,7 @@ USE_TZ = True
 # Static files
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files (User uploads)
 MEDIA_URL = '/media/'
